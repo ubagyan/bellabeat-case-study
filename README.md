@@ -2,7 +2,7 @@
 # Bellabeat Case Study: Google Data Analytics Capstone
 
 ## 📄 Summary
-This project is part of the Google Data Analytics Professional Certificate capstone. It involves a real-world case study using Fitbit data to generate insights for **Bellabeat**, a high-tech wellness company that manufactures health-focused smart products for women.
+This project is part of the Google Data Analytics Professional Certificate capstone performed by Han San. A real-world case study using Fitbit data to generate insights for **Bellabeat**, a high-tech wellness company that manufactures health-focused smart products for women.
 
 The goal is to uncover smart device usage trends and provide actionable marketing recommendations to support Bellabeat's growth strategy.
 
@@ -35,9 +35,67 @@ Data was processed using:
 ---
 
 ## 📈 Key Visualizations
-- Steps vs Sedentary Minutes (Scatter Plot)
-- Per User Comparison of Steps, Sleep, Sedentary Time (Grouped Bar Chart)
-- Proportion of <7 Hours Sleep Days (Pie Chart)
+
+
+### 1. Steps vs Sedentary Minutes (Scatter Plot)
+A negative correlation shows users who take more steps tend to have fewer sedentary minutes.
+
+![Steps vs Sedentary Minutes](Steps%20Vs%20Sedentary%20Minutes_Colored.png)
+
+```r
+ggplot(daily_activity, aes(x = TotalSteps, y = SedentaryMinutes, color = as.factor(Id))) +
+  geom_point(alpha = 0.6, size = 2) +
+  labs(title = "Steps vs Sedentary Minutes", x = "Total Steps", y = "Sedentary Minutes", color = "User ID") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+---
+
+### 2. Average Metrics per User (Bar Chart)
+A grouped bar chart comparing **Average Steps**, **Sedentary Time**, and **Sleep** across users.
+
+![Comparison of Average Metrics](Comparison%20of%20Average%20Steps%2C%20Sedentary%20Time%20and%20Sleep%20per%20user.png)
+
+```r
+user_summary <- combined_data %>%
+  group_by(Id) %>%
+  summarise(
+    avg_steps = mean(TotalSteps, na.rm = TRUE),
+    avg_sedentary = mean(SedentaryMinutes, na.rm = TRUE),
+    avg_sleep = mean(TotalMinutesAsleep, na.rm = TRUE)
+  ) %>%
+  mutate(UserLabel = paste("User", row_number()))
+
+user_summary_long <- user_summary %>%
+  pivot_longer(cols = c(avg_steps, avg_sedentary, avg_sleep), names_to = "Metric", values_to = "Value")
+
+ggplot(user_summary_long, aes(x = UserLabel, y = Value, fill = Metric)) +
+  geom_col(position = "dodge", width = 0.75) +
+  scale_fill_manual(values = c("avg_steps" = "#1f77b4", "avg_sedentary" = "#2ca02c", "avg_sleep" = "#d62728")) +
+  labs(title = "Comparison of Average Steps, Sedentary Time, and Sleep per User",
+       x = "User", y = "Average Daily Value", fill = "Metric") +
+  theme_minimal()
+```
+
+---
+
+### 3. Sleep Duration (Pie Chart)
+The pie chart shows the proportion of days where users slept less than 7 hours.
+
+![Sleep Duration Pie Chart](Proportion%20of%20Days%20with%20_7%20hours%20of%20sleep.png)
+
+```r
+sleep_day %>%
+  mutate(SleepCategory = ifelse(TotalMinutesAsleep < 420, "< 7 hrs", "≥ 7 hrs")) %>%
+  count(SleepCategory) %>%
+  ggplot(aes(x = "", y = n, fill = SleepCategory)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  scale_fill_manual(values = c("< 7 hrs" = "#ff7f0e", "≥ 7 hrs" = "#1f77b4")) +
+  labs(title = "Proportion of Days with Less than 7 Hours of Sleep", fill = "Sleep Duration") +
+  theme_void()
+```
 
 ---
 
@@ -58,14 +116,13 @@ Data was processed using:
 ## 📁 Files in this Repository
 - `Bellabeat_Final_Report_ubagyan.docx` – Full case study report
 - `bellabeat_analysis.R` – R script for data cleaning and visualization
-- `bellabeat_best_3_graphs.R` – Focused visual scripts
 - `heart_rate_summary.sql` – SQL queries for heart rate interpretation
-- `Steps_vs_Sedentary.png`, `Sleep_Pie.png`, etc. – Key visualizations
+- `Steps Vs Sedentary Minutes_Colored.png`, `Proportion of Days with _7 hours of sleep.png`, etc. – Key visualizations
 
 ---
 
 ## 📬 Contact
-- 🌐 LinkedIn: [linkedin.com/in/hanhtetsan](https://linkedin.com/in/hanhtetsan)
+- 🌐 [LinkedIn](https://www.linkedin.com/in/han-htet-s-185a9b2ab/)
 
 ---
 
